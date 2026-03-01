@@ -79,32 +79,79 @@ func _draw():
 	if get_viewport().get_camera_2d():
 		cam_pos = get_viewport().get_camera_2d().get_screen_center_position() - get_viewport_rect().size / 2
 	
-	# Player 1 HP Bar (Top Left)
+	var screen_width = get_viewport_rect().size.x
+	var bar_width = 220.0
+	var bar_height = 22.0
+	var bar_y = 18.0
+	var border_color = Color(0.9, 0.8, 0.5, 0.8)
+	
+	# ---- Player 1 HP Bar (Top Left) ----
 	var p1_hp_percent = 0.0
 	if player1:
-		p1_hp_percent = float(player1.current_health) / float(player1.max_health)
+		p1_hp_percent = clamp(float(player1.current_health) / float(player1.max_health), 0.0, 1.0)
 	
-	draw_rect(Rect2(cam_pos + Vector2(20, 20), Vector2(200, 30)), Color.BLACK)
-	draw_rect(Rect2(cam_pos + Vector2(20, 20), Vector2(200 * p1_hp_percent, 30)), Color.GREEN)
-	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(30, 42), "P1: " + str(player1.current_health if player1 else 0) + "/100", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
+	# Name label
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(20, bar_y - 2), "PRINCE", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.8, 0.9, 0.8, 0.9))
 	
-	# Player 2 HP Bar (Top Right)
+	# Bar background
+	draw_rect(Rect2(cam_pos + Vector2(20, bar_y + 12), Vector2(bar_width, bar_height)), Color(0.15, 0.15, 0.15, 0.9))
+	# HP fill - green to yellow to red based on health
+	var p1_color = Color(0.2, 0.9, 0.3) if p1_hp_percent > 0.5 else (Color(1.0, 0.8, 0.1) if p1_hp_percent > 0.25 else Color(0.9, 0.15, 0.1))
+	draw_rect(Rect2(cam_pos + Vector2(20, bar_y + 12), Vector2(bar_width * p1_hp_percent, bar_height)), p1_color)
+	# Bar border
+	draw_rect(Rect2(cam_pos + Vector2(20, bar_y + 12), Vector2(bar_width, bar_height)), border_color, false, 2.0)
+	# HP text
+	var p1_hp_text = str(player1.current_health if player1 else 0) + " / 100"
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(bar_width / 2 - 10, bar_y + 28), p1_hp_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
+	
+	# ---- Player 2 HP Bar (Top Right) ----
 	var p2_hp_percent = 0.0
 	if player2:
-		p2_hp_percent = float(player2.current_health) / float(player2.max_health)
+		p2_hp_percent = clamp(float(player2.current_health) / float(player2.max_health), 0.0, 1.0)
 	
-	var screen_width = get_viewport_rect().size.x
-	draw_rect(Rect2(cam_pos + Vector2(screen_width - 220, 20), Vector2(200, 30)), Color.BLACK)
-	draw_rect(Rect2(cam_pos + Vector2(screen_width - 220, 20), Vector2(200 * p2_hp_percent, 30)), Color.RED)
-	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width - 210, 42), "P2: " + str(player2.current_health if player2 else 0) + "/100", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
+	var p2_bar_x = screen_width - bar_width - 20
 	
-	# Round indicator (top center)
-	var round_info = "Round " + str(GameState.current_round) + "/" + str(GameState.max_rounds) + "   P1: " + str(GameState.p1_round_wins) + " - " + str(GameState.p2_round_wins) + " :P2"
-	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 120, 42), round_info, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color.WHITE)
+	# Name label
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(p2_bar_x, bar_y - 2), "NARAKASUR", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.9, 0.7, 0.7, 0.9))
 	
-	# Big center text (round announcements, fight, round winner)
+	# Bar background
+	draw_rect(Rect2(cam_pos + Vector2(p2_bar_x, bar_y + 12), Vector2(bar_width, bar_height)), Color(0.15, 0.15, 0.15, 0.9))
+	# HP fill (right-aligned: bar fills from right to left)
+	var p2_color = Color(0.9, 0.2, 0.2) if p2_hp_percent > 0.5 else (Color(1.0, 0.8, 0.1) if p2_hp_percent > 0.25 else Color(0.9, 0.15, 0.1))
+	var p2_fill_width = bar_width * p2_hp_percent
+	draw_rect(Rect2(cam_pos + Vector2(p2_bar_x + bar_width - p2_fill_width, bar_y + 12), Vector2(p2_fill_width, bar_height)), p2_color)
+	# Bar border
+	draw_rect(Rect2(cam_pos + Vector2(p2_bar_x, bar_y + 12), Vector2(bar_width, bar_height)), border_color, false, 2.0)
+	# HP text
+	var p2_hp_text = str(player2.current_health if player2 else 0) + " / 100"
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(p2_bar_x + bar_width / 2 - 15, bar_y + 28), p2_hp_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
+	
+	# ---- Round Banner (top center) ----
+	var banner_w = 260.0
+	var banner_h = 44.0
+	var banner_x = screen_width / 2 - banner_w / 2
+	var banner_y = 8.0
+	
+	# Banner background
+	draw_rect(Rect2(cam_pos + Vector2(banner_x, banner_y), Vector2(banner_w, banner_h)), Color(0.08, 0.06, 0.12, 0.85))
+	draw_rect(Rect2(cam_pos + Vector2(banner_x, banner_y), Vector2(banner_w, banner_h)), Color(1, 0.78, 0.15, 0.6), false, 1.5)
+	
+	# Round text
+	var round_text = "ROUND " + str(GameState.current_round) + " / " + str(GameState.max_rounds)
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(banner_x + banner_w / 2 - 55, banner_y + 18), round_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 0.85, 0.3))
+	
+	# Score text
+	var score_text = str(GameState.p1_round_wins) + "  -  " + str(GameState.p2_round_wins)
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(banner_x + banner_w / 2 - 20, banner_y + 37), score_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.8, 0.8, 0.8, 0.9))
+	
+	# ---- Big center text (round announcements) ----
 	if round_text_display != "":
-		draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 150, 300), round_text_display, HORIZONTAL_ALIGNMENT_LEFT, -1, 48, Color(1, 0.85, 0.2))
+		# Dark backdrop for readability
+		var text_bg_w = 500.0
+		var text_bg_h = 80.0
+		draw_rect(Rect2(cam_pos + Vector2(screen_width / 2 - text_bg_w / 2, 260), Vector2(text_bg_w, text_bg_h)), Color(0, 0, 0, 0.6))
+		draw_rect(Rect2(cam_pos + Vector2(screen_width / 2 - text_bg_w / 2, 260), Vector2(text_bg_w, text_bg_h)), Color(1, 0.78, 0.15, 0.4), false, 2.0)
+		draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 150, 310), round_text_display, HORIZONTAL_ALIGNMENT_LEFT, -1, 48, Color(1, 0.85, 0.2))
 
 func _process(_delta):
 	queue_redraw()

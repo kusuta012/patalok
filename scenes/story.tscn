@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/Story.gd" id="1_story"]
+[ext_resource type="Texture2D" path="res://assets/bg/terrace.png" id="2_bg"]
 
 [node name="Story" type="Control"]
 layout_mode = 3
@@ -11,14 +12,53 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_story")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.02, 0.1, 1)
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(0.1, 0.08, 0.15, 1)
+
+[node name="DarkOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="TopSeparator" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 80.0
+offset_top = 160.0
+offset_right = -80.0
+offset_bottom = 161.0
+grow_horizontal = 2
+color = Color(1, 0.78, 0.15, 0.3)
+
+[node name="ChapterLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 100.0
+offset_right = 200.0
+offset_bottom = 140.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.7, 0.55, 0.3, 1)
+theme_override_font_sizes/font_size = 16
+text = "Chapter I - The Awakening"
+horizontal_alignment = 1
+uppercase = true
 
 [node name="StoryLabel" type="Label" parent="."]
 layout_mode = 1
@@ -28,16 +68,30 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -400.0
-offset_top = -60.0
+offset_top = -50.0
 offset_right = 400.0
-offset_bottom = 20.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.95, 0.88, 0.7, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
 text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="BottomSeparator" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 80.0
+offset_top = 460.0
+offset_right = -80.0
+offset_bottom = 461.0
+grow_horizontal = 2
+color = Color(1, 0.78, 0.15, 0.3)
 
 [node name="ContinueLabel" type="Label" parent="."]
 layout_mode = 1
@@ -46,12 +100,30 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -150.0
+offset_left = -200.0
 offset_top = -50.0
-offset_right = 150.0
+offset_right = 200.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.55, 0.45, 0.8)
+theme_override_font_sizes/font_size = 14
 text = "Press ENTER to continue..."
+horizontal_alignment = 1
+
+[node name="ProgressLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -75.0
+offset_right = 50.0
+offset_bottom = -55.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.45, 0.35, 0.6)
+theme_override_font_sizes/font_size = 12
+text = "1 / 5"
 horizontal_alignment = 1
