@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var max_health = 100
 @export var current_health = 100
 @export var attack_damage = 25
-@export var attack_range = 120.0
+@export var attack_range = 150.0  # Simple radius - adjust this value as needed
 
 const GRAVITY = 980.0
 
@@ -43,7 +43,6 @@ func _physics_process(delta):
 		velocity.x = move_toward(velocity.x, 0, speed)
 	
 	move_and_slide()
-	# NO BOUNDARIES - Prince can move anywhere!
 
 func attack():
 	is_attacking = true
@@ -55,20 +54,17 @@ func attack():
 func check_hit():
 	var enemies = get_tree().get_nodes_in_group("player2")
 	for enemy in enemies:
-		var horizontal_distance = abs(global_position.x - enemy.global_position.x)
-		print("Player 1 attacking! Horizontal distance to enemy: ", horizontal_distance)
+		# Simple true distance check
+		var distance = global_position.distance_to(enemy.global_position)
 		
-		if horizontal_distance <= attack_range:
-			var direction_to_enemy = sign(enemy.global_position.x - global_position.x)
-			var facing_direction = -1 if animated_sprite.flip_h else 1
-			
-			print("Direction to enemy: ", direction_to_enemy, " | Facing: ", facing_direction)
-			
+		print("Player 1 attacking! Distance: ", int(distance), " pixels")
+		
+		if distance <= attack_range:
 			if enemy.has_method("take_damage"):
 				enemy.take_damage(attack_damage)
-				print("Player 1 hit Player 2 for ", attack_damage, " damage!")
+				print("  ✓ HIT! Dealt ", attack_damage, " damage!")
 		else:
-			print("Player 1 attack missed - too far!")
+			print("  ✗ MISS - Too far! (", int(distance), "/", attack_range, ")")
 
 func take_damage(damage):
 	if is_dead:
