@@ -7,6 +7,12 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0e48y"]
 size = Vector2(177, 234)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sugp2"]
+size = Vector2(1144, 97)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jyhfs"]
+size = Vector2(75, 593)
+
 [node name="Main" type="Node2D" unique_id=190259222]
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1394070410]
@@ -26,3 +32,15 @@ z_index = -1
 position = Vector2(570, 332)
 scale = Vector2(0.7438152, 0.63540626)
 texture = ExtResource("3_tbgi4")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=678792514]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1795181195]
+position = Vector2(574, 616.5)
+shape = SubResource("RectangleShape2D_sugp2")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="." unique_id=472463535]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2" unique_id=2134217730]
+position = Vector2(-35, 298)
+shape = SubResource("RectangleShape2D_jyhfs")
