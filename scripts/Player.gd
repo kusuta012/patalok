@@ -1,42 +1,10 @@
-#extends CharacterBody2D
-#
-#@export var speed : float = 300.0
-#
-#const GRAVITY = 980.0
-#
-#@onready var animated_sprite = $AnimatedSprite2D
-#
-#func _physics_process(delta):
-	## Apply gravity
-	#if not is_on_floor():
-		#velocity.y += GRAVITY * delta
-#
-	## Handle jump
-	#if Input.is_action_just_pressed("p1_up") and is_on_floor():
-		#velocity.y = -500.0
-#
-	## Handle attack
-	#if Input.is_action_just_pressed("p1_attack"):
-		#animated_sprite.play("attack")
-#
-	## Get the horizontal input direction
-	#var direction = Input.get_axis("p1_left", "p1_right")
-	#
-	#if direction:
-		#velocity.x = direction * speed
-	#else:
-		#velocity.x = move_toward(velocity.x, 0, speed)
-#
-	#move_and_slide()
-	
-	
 extends CharacterBody2D
 
 @export var speed : float = 300.0
 @export var max_health = 100
 @export var current_health = 100
 @export var attack_damage = 25
-@export var attack_range = 100.0
+@export var attack_range = 120.0
 
 const GRAVITY = 980.0
 
@@ -46,7 +14,7 @@ var is_dead = false
 
 func _ready():
 	add_to_group("player1")
-	# Connect the animation finished signal
+	current_health = max_health
 	if animated_sprite:
 		animated_sprite.animation_finished.connect(_on_animated_sprite_2d_animation_finished)
 
@@ -65,7 +33,7 @@ func _physics_process(delta):
 	
 	var direction = Input.get_axis("p1_left", "p1_right")
 	
-	if direction:
+	if direction and not is_attacking:
 		velocity.x = direction * speed
 		if direction > 0:
 			animated_sprite.flip_h = false
@@ -75,38 +43,53 @@ func _physics_process(delta):
 		velocity.x = move_toward(velocity.x, 0, speed)
 	
 	move_and_slide()
+	# NO BOUNDARIES - Prince can move anywhere!
 
 func attack():
 	is_attacking = true
+	velocity.x = 0
 	animated_sprite.play("attack")
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.3).timeout
 	check_hit()
-	# Fallback: Reset attacking after animation duration
-	await get_tree().create_timer(0.5).timeout
-	is_attacking = false
 
 func check_hit():
 	var enemies = get_tree().get_nodes_in_group("player2")
 	for enemy in enemies:
-		var distance = global_position.distance_to(enemy.global_position)
-		if distance <= attack_range:
+		var horizontal_distance = abs(global_position.x - enemy.global_position.x)
+		print("Player 1 attacking! Horizontal distance to enemy: ", horizontal_distance)
+		
+		if horizontal_distance <= attack_range:
+			var direction_to_enemy = sign(enemy.global_position.x - global_position.x)
+			var facing_direction = -1 if animated_sprite.flip_h else 1
+			
+			print("Direction to enemy: ", direction_to_enemy, " | Facing: ", facing_direction)
+			
 			if enemy.has_method("take_damage"):
 				enemy.take_damage(attack_damage)
 				print("Player 1 hit Player 2 for ", attack_damage, " damage!")
+		else:
+			print("Player 1 attack missed - too far!")
 
 func take_damage(damage):
 	if is_dead:
 		return
 	current_health -= damage
 	print("Player 1 took ", damage, " damage. HP: ", current_health)
+	animated_sprite.modulate = Color(1, 0.5, 0.5)
+	await get_tree().create_timer(0.2).timeout
+	animated_sprite.modulate = Color(1, 1, 1)
+	
 	if current_health <= 0:
 		die()
 
 func die():
 	is_dead = true
 	velocity = Vector2.ZERO
+	current_health = 0
 	print("Player 1 died! Player 2 wins!")
-	animated_sprite.modulate = Color(0.5, 0.5, 0.5)
+	animated_sprite.modulate = Color(0.3, 0.3, 0.3)
+	await get_tree().create_timer(2.0).timeout
+	get_tree().reload_current_scene()
 
 func _on_animated_sprite_2d_animation_finished():
 	if animated_sprite.animation == "attack":

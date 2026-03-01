@@ -5,13 +5,35 @@ var player2 = null
 
 func _ready():
 	await get_tree().process_frame
+	
+	# Find Player 1
 	var players = get_tree().get_nodes_in_group("player1")
+	print("Number of Player1 nodes found: ", players.size())
+	for i in range(players.size()):
+		print("Player1 [", i, "]: ", players[i].name, " at position: ", players[i].global_position)
+	
 	if players.size() > 0:
 		player1 = players[0]
+		print("Found Player 1: ", player1.name)
+	else:
+		print("ERROR: Player 1 not found!")
 	
+	# Find Player 2
 	var demons = get_tree().get_nodes_in_group("player2")
+	print("Number of Player2 nodes found: ", demons.size())
+	for i in range(demons.size()):
+		print("Player2 [", i, "]: ", demons[i].name, " at position: ", demons[i].global_position)
+	
 	if demons.size() > 0:
 		player2 = demons[0]
+		print("Found Player 2: ", player2.name)
+	else:
+		print("ERROR: Player 2 not found!")
+	
+	# Print initial distance
+	if player1 and player2:
+		var initial_dist = player1.global_position.distance_to(player2.global_position)
+		print("Initial distance between players: ", initial_dist)
 
 func _draw():
 	# Get camera position to draw UI in screen space
@@ -37,6 +59,17 @@ func _draw():
 	draw_rect(Rect2(cam_pos + Vector2(screen_width - 220, 20), Vector2(200, 30)), Color.BLACK)
 	draw_rect(Rect2(cam_pos + Vector2(screen_width - 220, 20), Vector2(200 * p2_hp_percent, 30)), Color.RED)
 	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width - 210, 42), "P2: " + str(player2.current_health if player2 else 0) + "/100", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
+	
+	# Debug: Draw distance on screen
+	if player1 and player2:
+		var current_dist = player1.global_position.distance_to(player2.global_position)
+		draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 100, 100), "Distance: " + str(int(current_dist)) + " px", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.YELLOW)
 
-func _process(delta):
-	queue_redraw()  # Redraw every frame
+func _process(_delta):  # Changed "delta" to "_delta" to fix the warning
+	queue_redraw()
+	
+	# Debug: Print distance every second
+	if Engine.get_frames_drawn() % 60 == 0:
+		if player1 and player2:
+			var dist = player1.global_position.distance_to(player2.global_position)
+			print("Distance: ", int(dist), " | P1 pos: ", player1.global_position, " | P2 pos: ", player2.global_position)
