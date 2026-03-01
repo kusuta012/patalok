@@ -30,9 +30,11 @@ func _ready():
 	else:
 		print("ERROR: Player 2 not found!")
 	
-	# Print initial distance
+	# Print initial distance (using collision shape centers for accuracy)
 	if player1 and player2:
-		var initial_dist = player1.global_position.distance_to(player2.global_position)
+		var p1_center = player1.get_node("CollisionShape2D").global_position
+		var p2_center = player2.get_node("CollisionShape2D").global_position
+		var initial_dist = p1_center.distance_to(p2_center)
 		print("Initial distance between players: ", initial_dist)
 
 func _draw():
@@ -60,16 +62,15 @@ func _draw():
 	draw_rect(Rect2(cam_pos + Vector2(screen_width - 220, 20), Vector2(200 * p2_hp_percent, 30)), Color.RED)
 	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width - 210, 42), "P2: " + str(player2.current_health if player2 else 0) + "/100", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
 	
-	# Debug: Draw distance on screen
-	if player1 and player2:
-		var current_dist = player1.global_position.distance_to(player2.global_position)
-		draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 100, 100), "Distance: " + str(int(current_dist)) + " px", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.YELLOW)
+
 
 func _process(_delta):  # Changed "delta" to "_delta" to fix the warning
 	queue_redraw()
 	
-	# Debug: Print distance every second
+	# Debug: Print distance every second (using collision shape centers)
 	if Engine.get_frames_drawn() % 60 == 0:
 		if player1 and player2:
-			var dist = player1.global_position.distance_to(player2.global_position)
-			print("Distance: ", int(dist), " | P1 pos: ", player1.global_position, " | P2 pos: ", player2.global_position)
+			var p1_center = player1.get_node("CollisionShape2D").global_position
+			var p2_center = player2.get_node("CollisionShape2D").global_position
+			var dist = p1_center.distance_to(p2_center)
+			print("Distance: ", int(dist), " | P1 center: ", p1_center, " | P2 center: ", p2_center)

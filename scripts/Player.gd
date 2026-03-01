@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var max_health = 100
 @export var current_health = 100
 @export var attack_damage = 25
-@export var attack_range = 150.0  # Simple radius - adjust this value as needed
+@export var attack_range = 165.0  # Simple radius - adjust this value as needed
 
 const GRAVITY = 980.0
 
@@ -54,8 +54,10 @@ func attack():
 func check_hit():
 	var enemies = get_tree().get_nodes_in_group("player2")
 	for enemy in enemies:
-		# Simple true distance check
-		var distance = global_position.distance_to(enemy.global_position)
+		# Use collision shape centers for accurate distance (node origins are offset from visuals)
+		var my_center = $CollisionShape2D.global_position
+		var enemy_center = enemy.get_node("CollisionShape2D").global_position
+		var distance = my_center.distance_to(enemy_center)
 		
 		print("Player 1 attacking! Distance: ", int(distance), " pixels")
 		
