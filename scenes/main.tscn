@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dv734dwahrml4" path="res://scripts/Player.gd" id="1_sugp2"]
 [ext_resource type="Texture2D" uid="uid://dxj3bk4sgue6c" path="res://assets/characters/prince.png" id="2_jyhfs"]
-[ext_resource type="Texture2D" uid="uid://dls8s2r1dggd0" path="res://assets/bg/bg-frame1.png" id="3_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://cifdmq6wiyxwm" path="res://assets/bg/terrace.png" id="3_sugp2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0e48y"]
 size = Vector2(177, 234)
@@ -16,6 +16,7 @@ size = Vector2(75, 593)
 [node name="Main" type="Node2D" unique_id=190259222]
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1394070410]
+position = Vector2(-176, 91)
 script = ExtResource("1_sugp2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1780195956]
@@ -29,9 +30,9 @@ texture = ExtResource("2_jyhfs")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1289404995]
 z_index = -1
-position = Vector2(570, 332)
-scale = Vector2(0.7438152, 0.63540626)
-texture = ExtResource("3_tbgi4")
+position = Vector2(585, 95)
+scale = Vector2(0.9020256, -0.81699604)
+texture = ExtResource("3_sugp2")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=678792514]
 
