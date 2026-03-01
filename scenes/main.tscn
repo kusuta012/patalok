@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://bd17v2e2hrjhh"]
 
+[ext_resource type="Script" uid="uid://14etnt4dtd55" path="res://scripts/Main.gd" id="1_85g3d"]
 [ext_resource type="Script" uid="uid://dv734dwahrml4" path="res://scripts/Player.gd" id="1_sugp2"]
 [ext_resource type="Texture2D" uid="uid://dxj3bk4sgue6c" path="res://assets/characters/prince.png" id="2_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://dafprqe177b8a" path="res://assets/characters/prince_attack.png" id="3_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://cifdmq6wiyxwm" path="res://assets/bg/terrace.png" id="3_sugp2"]
 [ext_resource type="Texture2D" uid="uid://b3wm3omdgdfgl" path="res://assets/characters/naraksur_attack.png" id="5_tbgi4"]
+[ext_resource type="Script" uid="uid://bylka7xnrd5vy" path="res://scripts/Demon.gd" id="5_tipki"]
 [ext_resource type="Texture2D" uid="uid://d2s7ciglof8a8" path="res://assets/characters/narakasur-003.png" id="6_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://cv2fvpk2wl447" path="res://assets/characters/narakasure-002.png" id="6_tefeu"]
 
@@ -43,7 +45,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("5_tbgi4")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack1",
 "speed": 5.0
 }]
@@ -60,7 +62,11 @@ size = Vector2(75, 593)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tbgi4"]
 size = Vector2(1152, 132)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tipki"]
+size = Vector2(94.25, 493.5)
+
 [node name="Main" type="Node2D" unique_id=190259222]
+script = ExtResource("1_85g3d")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1394070410]
 position = Vector2(-172, -34)
@@ -88,13 +94,14 @@ scale = Vector2(0.29970342, 0.29977882)
 texture = ExtResource("3_sugp2")
 
 [node name="Demon" type="CharacterBody2D" parent="." unique_id=1419699380]
+script = ExtResource("5_tipki")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Demon" unique_id=1358479996]
-position = Vector2(994.99994, 332.00003)
+position = Vector2(998.99994, 322)
 scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_tefeu")
 animation = &"attack1"
-frame_progress = 0.7741079
+frame_progress = 0.08425474
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Demon" unique_id=1668533969]
 position = Vector2(989.5, 327)
@@ -113,7 +120,18 @@ position = Vector2(-35, 298)
 shape = SubResource("RectangleShape2D_jyhfs")
 
 [node name="StaticBody2D3" type="StaticBody2D" parent="." unique_id=377449261]
+position = Vector2(-5, 3)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3" unique_id=538170683]
 position = Vector2(580, 65)
 shape = SubResource("RectangleShape2D_tbgi4")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="." unique_id=641283326]
+position = Vector2(-2, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4" unique_id=98053771]
+position = Vector2(1200.125, 267)
+shape = SubResource("RectangleShape2D_tipki")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1868350573]
+position = Vector2(576, 321)
