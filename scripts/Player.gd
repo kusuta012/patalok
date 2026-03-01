@@ -84,10 +84,12 @@ func die():
 	is_dead = true
 	velocity = Vector2.ZERO
 	current_health = 0
-	print("Player 1 died! Player 2 wins!")
+	print("Player 1 died! Player 2 wins round!")
 	animated_sprite.modulate = Color(0.3, 0.3, 0.3)
-	await get_tree().create_timer(2.0).timeout
-	get_tree().reload_current_scene()
+	# Notify Main about round end - player2 wins this round
+	var main = get_tree().current_scene
+	if main.has_method("round_end"):
+		main.round_end("player2")
 
 func _on_animated_sprite_2d_animation_finished():
 	if animated_sprite.animation == "attack":

@@ -2,40 +2,76 @@ extends Node2D
 
 var player1 = null
 var player2 = null
+var round_announced = false
+var round_text_timer = 0.0
+var round_text_display = ""
+var round_over = false
 
 func _ready():
 	await get_tree().process_frame
 	
 	# Find Player 1
 	var players = get_tree().get_nodes_in_group("player1")
-	print("Number of Player1 nodes found: ", players.size())
-	for i in range(players.size()):
-		print("Player1 [", i, "]: ", players[i].name, " at position: ", players[i].global_position)
-	
 	if players.size() > 0:
 		player1 = players[0]
-		print("Found Player 1: ", player1.name)
-	else:
-		print("ERROR: Player 1 not found!")
 	
 	# Find Player 2
 	var demons = get_tree().get_nodes_in_group("player2")
-	print("Number of Player2 nodes found: ", demons.size())
-	for i in range(demons.size()):
-		print("Player2 [", i, "]: ", demons[i].name, " at position: ", demons[i].global_position)
-	
 	if demons.size() > 0:
 		player2 = demons[0]
-		print("Found Player 2: ", player2.name)
-	else:
-		print("ERROR: Player 2 not found!")
 	
-	# Print initial distance (using collision shape centers for accuracy)
-	if player1 and player2:
-		var p1_center = player1.get_node("CollisionShape2D").global_position
-		var p2_center = player2.get_node("CollisionShape2D").global_position
-		var initial_dist = p1_center.distance_to(p2_center)
-		print("Initial distance between players: ", initial_dist)
+	# Show round announcement
+	round_text_display = "ROUND " + str(GameState.current_round)
+	round_text_timer = 2.0
+	
+	# Freeze players during announcement
+	if player1:
+		player1.set_physics_process(false)
+	if player2:
+		player2.set_physics_process(false)
+	
+	await get_tree().create_timer(2.0).timeout
+	round_text_display = "FIGHT!"
+	round_text_timer = 1.0
+	
+	await get_tree().create_timer(1.0).timeout
+	round_text_display = ""
+	
+	# Unfreeze players
+	if player1:
+		player1.set_physics_process(true)
+	if player2:
+		player2.set_physics_process(true)
+
+func round_end(winner: String):
+	if round_over:
+		return
+	round_over = true
+	
+	if winner == "player1":
+		GameState.p1_round_wins += 1
+		round_text_display = "PLAYER 1 WINS ROUND " + str(GameState.current_round) + "!"
+	else:
+		GameState.p2_round_wins += 1
+		round_text_display = "PLAYER 2 WINS ROUND " + str(GameState.current_round) + "!"
+	
+	round_text_timer = 3.0
+	
+	# Freeze both players
+	if player1:
+		player1.set_physics_process(false)
+	if player2:
+		player2.set_physics_process(false)
+	
+	await get_tree().create_timer(3.0).timeout
+	
+	if GameState.current_round >= GameState.max_rounds:
+		# Match over - go to result screen
+		get_tree().change_scene_to_file("res://scenes/result_screen.tscn")
+	else:
+		# Next round
+		GameState.current_round += 1
+		get_tree().reload_current_scene()
 
 func _draw():
 	# Get camera position to draw UI in screen space
@@ -62,15 +98,13 @@ func _draw():
 	draw_rect(Rect2(cam_pos + Vector2(screen_width - 220, 20), Vector2(200 * p2_hp_percent, 30)), Color.RED)
 	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width - 210, 42), "P2: " + str(player2.current_health if player2 else 0) + "/100", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
 	
-
-
-func _process(_delta):  # Changed "delta" to "_delta" to fix the warning
-	queue_redraw()
+	# Round indicator (top center)
+	var round_info = "Round " + str(GameState.current_round) + "/" + str(GameState.max_rounds) + "   P1: " + str(GameState.p1_round_wins) + " - " + str(GameState.p2_round_wins) + " :P2"
+	draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 120, 42), round_info, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color.WHITE)
 	
-	# Debug: Print distance every second (using collision shape centers)
-	if Engine.get_frames_drawn() % 60 == 0:
-		if player1 and player2:
-			var p1_center = player1.get_node("CollisionShape2D").global_position
-			var p2_center = player2.get_node("CollisionShape2D").global_position
-			var dist = p1_center.distance_to(p2_center)
-			print("Distance: ", int(dist), " | P1 center: ", p1_center, " | P2 center: ", p2_center)
+	# Big center text (round announcements, fight, round winner)
+	if round_text_display != "":
+		draw_string(ThemeDB.fallback_font, cam_pos + Vector2(screen_width / 2 - 150, 300), round_text_display, HORIZONTAL_ALIGNMENT_LEFT, -1, 48, Color(1, 0.85, 0.2))
+
+func _process(_delta):
+	queue_redraw()

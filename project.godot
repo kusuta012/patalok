@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Paatalok"
-run/main_scene="uid://bd17v2e2hrjhh"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameState="*res://scripts/GameState.gd"
 
 [input]
 
